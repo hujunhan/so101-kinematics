@@ -1,0 +1,42 @@
+{
+  "seed": 0,
+  "fk": {
+    "n": 1000,
+    "pos_err_max_m": 3.57874756446653e-16,
+    "rot_err_max": 1.6458076415189835e-15
+  },
+  "ik": {
+    "arm_control ik_jacobian (pseudo-inverse)": {
+      "success": 200,
+      "success_within_limits": 139,
+      "violations_among_successes": 61,
+      "median_err_mm": 1.4064026091251467,
+      "median_ms": 69.36236101319082,
+      "p95_ms": 106.03302259987684
+    },
+    "arm_control ik_jacobian (transpose)": {
+      "success": 16,
+      "success_within_limits": 16,
+      "violations_among_successes": 0,
+      "median_err_mm": 11.103657173248829,
+      "median_ms": 3740.336623508483,
+      "p95_ms": 3777.4008703709114
+    },
+    "arm_control ik_scipy (SLSQP + limits)": {
+      "success": 192,
+      "success_within_limits": 192,
+      "violations_among_successes": 0,
+      "median_err_mm": 0.0015075564299426845,
+      "median_ms": 620.9979875129648,
+      "p95_ms": 778.7285794242051
+    },
+    "Pinocchio DLS (reference, no limits)": {
+      "success": 200,
+      "success_within_limits": 85,
+      "violations_among_successes": 115,
+      "median_err_mm": 0.2870971307349697,
+      "median_ms": 0.16299504204653203,
+      "p95_ms": 0.42393627227283975
+    }
+  }
+}
