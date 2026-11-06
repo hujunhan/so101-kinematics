@@ -31,8 +31,9 @@ Every solver starts from the zero pose, and success means a position error under
 | Pinocchio damped least squares (reference, no limits) | 200/200 | **85/200** | **0.2 ms** |
 
 - **FK:** the 2023 code matches Pinocchio to 3.6e-16 m over 1000 configurations. It is correct, not just close.
-- **Speed** comes from the implementation, not the algorithm. Pseudo-inverse and DLS are nearly the same
-  update, but evaluating a sympy-generated Jacobian costs about 70 ms, against 0.2 ms for Pinocchio's C++.
+- **Speed** comes mostly from the implementation, not the algorithm. Pseudo-inverse and DLS are nearly the
+  same update. The 2023 code evaluates sympy-generated expressions in Python, and its half-size steps
+  (alpha 0.5) need more iterations: about 70 ms per solve, against 0.2 ms for Pinocchio's C++.
 - **Joint limits are the real problem.** Unconstrained solvers reach the target with joint angles the arm
   cannot take: 31% of the 2023 pseudo-inverse solutions and 58% of Pinocchio DLS (it takes full Newton
   steps and wanders further). Only the constrained SLSQP respects the limits, at about 3,000× the cost of
