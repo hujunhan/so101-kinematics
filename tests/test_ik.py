@@ -1,8 +1,9 @@
 import numpy as np
 import pinocchio as pin
 import pytest
+from scipy.optimize import lsq_linear
 
-from so101_kinematics.ik import pitch_of, roll_of, solve_ik, solve_ik_clamp, wrap
+from so101_kinematics.ik import METHODS, bounded_dls_step, pitch_of, roll_of, solve_ik, wrap
 from so101_kinematics.models import HI, LO, N, PinArm
 
 
@@ -45,12 +46,12 @@ def test_straight_down_is_minus_90_deg_and_zero_pose_is_horizontal(arm):
     assert np.isclose(geometric_pitch_roll(arm, q)[0], -np.pi / 2, atol=1e-4)
 
 
-@pytest.mark.parametrize("solver", [solve_ik, solve_ik_clamp])
-def test_solutions_always_inside_the_limits(arm, solver):
+@pytest.mark.parametrize("method", METHODS)
+def test_solutions_always_inside_the_limits(arm, method):
     rng = np.random.default_rng(2)
     for _ in range(20):
         q_t = rng.uniform(LO, HI)
-        r = solver(arm, arm.fk(q_t)[:3, 3], pitch_of(q_t), roll_of(q_t), np.zeros(N))
+        r = solve_ik(arm, arm.fk(q_t)[:3, 3], pitch_of(q_t), roll_of(q_t), np.zeros(N), method=method)
         assert np.all(r.q >= LO - 1e-12) and np.all(r.q <= HI + 1e-12)
 
 
@@ -67,3 +68,22 @@ def test_unreachable_pose_gives_a_compromise_not_garbage(arm):
     assert not r.converged
     assert np.all(r.q >= LO - 1e-12) and np.all(r.q <= HI + 1e-12)
     assert np.isfinite(r.pos_err) and r.pos_err < 0.5  # moved toward the target, did not run away
+
+
+def test_pos_jac_matches_fk_and_jacobian(arm):
+    q = np.random.default_rng(5).uniform(LO, HI)
+    pos, J = arm.pos_jac(q)
+    assert np.allclose(pos, arm.fk(q)[:3, 3]) and np.allclose(J, arm.jacobian(q)[:3])
+
+
+def test_activeset_step_matches_bvls_on_random_problems():
+    rng = np.random.default_rng(7)
+    damping = 0.01
+    for _ in range(300):
+        J, e = rng.normal(size=(5, N)), rng.normal(size=5)
+        lb, ub = -rng.uniform(0.01, 1.0, N), rng.uniform(0.01, 1.0, N)  # many of them active
+        A, b = np.vstack([J, damping * np.eye(N)]), np.concatenate([e, np.zeros(N)])
+        ref = lsq_linear(A, b, bounds=(lb, ub), method="bvls").x
+        dq = bounded_dls_step(J, e, damping, lb, ub)
+        assert np.all(dq >= lb - 1e-12) and np.all(dq <= ub + 1e-12)
+        assert np.sum((A @ dq - b) ** 2) <= np.sum((A @ ref - b) ** 2) + 1e-9

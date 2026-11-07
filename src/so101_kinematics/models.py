@@ -84,6 +84,14 @@ class PinArm:
         J = pin.getFrameJacobian(self.model, self.data, self.fid, pin.LOCAL_WORLD_ALIGNED)
         return J[:, self.idx]
 
+    def pos_jac(self, q: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        """Tool position (3,) and its 3x5 Jacobian with one kinematics pass (used by the IK loops)."""
+        full = self._full(q)
+        pin.computeJointJacobians(self.model, self.data, full)
+        pin.updateFramePlacements(self.model, self.data)
+        J = pin.getFrameJacobian(self.model, self.data, self.fid, pin.LOCAL_WORLD_ALIGNED)
+        return self.data.oMf[self.fid].translation.copy(), J[:3, self.idx]
+
     def ik_dls_position(self, target_xyz, q0, damping=1e-3, tol=0.002, max_iter=200):
         """Textbook damped-least-squares IK on position only, no joint limits (reference)."""
         q = np.array(q0, dtype=float)
