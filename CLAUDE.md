@@ -13,10 +13,15 @@ The series plan (M0–M5) is in the so101-core README.
   fix is seeding (structured start: roll and the pitch sum are known exactly; or closed-form planar IK), not a
   better step. Compromise quality when the pitch is unreachable: 8.6 mm vs 0.9 mm for SLSQP.
   `results/s2_near_limits.md` shows the bounded step does not beat clamping, so do not claim it does.
-- **Next: S3**, the real arm draws the shapes. Before anything moves the arm: check so101-core's SafeArm
-  limit margin against the 10 deg margin used for the shapes, decide the drawing speed, tell the user, and
-  have them present with power in reach. Then measure commanded vs measured trajectory, tracking error and
-  gravity sag. S4 is the write-up.
+- S3 done (2026-11-06): `so101-draw` (`src/so101_kinematics/s3.py`, stages readonly / start / draw, all
+  through SafeArm; `SafeArm.follow` was added to so101-core for it). Four runs (square, circle x 2, 5 cm/s) in
+  `results/s3/`, analysis `benchmarks/s3_analyze.py` -> `results/s3_drawing.md`: ~100 ms delay, elbow sag
+  0.9 deg, deadband 0.1-0.4 deg. Known issue left for M2: a ruler check gave 8.66 cm by FK for 10 cm.
+- Real-arm runs: the user runs `so101-draw` in their own terminal (it asks for `yes` and for Enter before
+  releasing torque, which Claude's shell cannot answer) and pastes the output; Claude analyzes the logs.
+  Torque-off reads Claude can run directly.
+- **Next: S4**, the write-up. Optional, user's call: a compensation run (command ~100 ms ahead, add the elbow
+  sag) as a direct test of the joint model; it overlaps with M2 (servo identification).
 
 ## How we work
 - Claude writes and runs most of the code. The user does physical work on the arm, makes the key

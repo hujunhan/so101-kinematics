@@ -7,7 +7,7 @@ M1 of the [SO-101 series](https://github.com/hujunhan/so101-core). It covers kin
 - A joint-limited IK that solves for position **plus an approach angle**.
 - The real arm draws shapes, with the tracking error measured.
 
-> **Status (2026-11-06):** S1 and S2 done (simulation only); S3, the real arm, next.
+> **Status (2026-11-06):** S1-S3 done: simulation benchmark, joint-limited IK, and the real arm drawing; S4 (write-up) next.
 
 ## Plan
 
@@ -88,6 +88,34 @@ and 0.5 deg:
   within 2 deg of that limit.
 
 ![reachable region](results/s2_workspace.png)
+
+## S3 result: the real arm draws (2026-11-06)
+
+Full tables and figures: [results/s3_drawing.md](results/s3_drawing.md). The square (5.1 cm) and the circle
+(7.2 cm) were each drawn at 2 and 5 cm/s, on the plane 20 cm in front of the base, through `SafeArm` at 30 Hz
+(`so101-draw`, every command safety-filtered, stall watch 5 deg / 0.3 s). All four runs completed; the safety
+layer changed no command. The tool positions below are the FK of the commanded and of the measured joints, so
+they describe how the servos follow, not the absolute accuracy of the model.
+
+| Run | Error median / max | Constant offset (down) | Lag along the path |
+|---|---:|---:|---:|
+| square, 2 cm/s | 5.9 / 9.7 mm | 4.9 mm | 2.6 mm |
+| circle, 2 cm/s | 3.8 / 9.5 mm | 3.5 mm | 2.8 mm |
+| square, 5 cm/s | 8.6 / 12.1 mm | 5.1 mm | 5.6 mm |
+| circle, 5 cm/s | 6.1 / 11.1 mm | 3.4 mm | 6.0 mm |
+
+- **The error has three parts**, from a per-joint fit over all runs (R2 0.87-0.95):
+  error = offset - sign(velocity) * (deadband + delay * |velocity|).
+  - **Delay about 100 ms** on every joint (97-113 ms). It is why the lag along the path doubles from 2 to
+    5 cm/s. About one tick (33 ms) of it is the measurement: each tick reads right after sending.
+  - **Gravity sag**, mostly the elbow: +0.9 deg, about 4-5 mm down at the tool. It does not change with speed.
+  - **A small deadband**, 0.1-0.4 deg (largest on the elbow). My first reading of the square plot blamed
+    backlash and deadband for the direction-dependent error; the fit shows the delay explains most of it.
+- **Shapes come out taller than commanded** (square 5.09 -> 5.63 cm high at 2 cm/s): along the bottom the arm
+  is still catching up from the ramp, and moving up it lags while moving down it does not fight gravity.
+- **Known issue, not investigated:** a torque-off ruler check gave 8.66 cm by FK for 10 cm on the table, with
+  the heights consistent to 1.6 mm. A calibration zero offset of a few degrees on the elbow or wrist would
+  explain it (two points cannot tell which). That is M2's subject (calibration); M1 left it.
 
 ## Why "position + approach angle"
 

@@ -72,6 +72,34 @@ def analyze(kin: PinArm, log) -> tuple[dict, dict]:
     return m, {"t": t, "pc": pc, "pm": pm, "e": e}
 
 
+def fit_joint_model(logs: list) -> dict:
+    """Per joint, over all runs: error = offset - sign(v) * (deadband + delay * |v|), on moving ticks.
+
+    offset: constant (gravity sag); deadband: lag that does not grow with speed; delay: lag that does.
+    Part of the delay is the measurement itself: each tick reads the position right after sending the
+    command, before the servo has reacted.
+    """
+    out = {}
+    for j, name in enumerate(JOINTS[:4]):  # wrist_roll barely moves while drawing
+        A, y = [], []
+        for log in logs:
+            qc, qm = log["q_cmd"][:, j], log["q_meas"][:, j]
+            v = np.gradient(qc) * float(log["hz"])
+            m = np.abs(v) > np.radians(0.5)
+            s = np.sign(v[m])
+            A.append(np.stack([np.ones(m.sum()), -s, -s * np.abs(v[m])], 1))
+            y.append(qm[m] - qc[m])
+        A, y = np.vstack(A), np.concatenate(y)
+        x = np.linalg.lstsq(A, y, rcond=None)[0]
+        out[name] = {
+            "offset_deg": float(np.degrees(x[0])),
+            "deadband_deg": float(np.degrees(x[1])),
+            "delay_ms": float(x[2] * 1e3),
+            "r2": float(1 - (y - A @ x).var() / y.var()),
+        }
+    return out
+
+
 def style(ax):
     ax.set_facecolor(SURFACE)
     for s in ax.spines.values():
@@ -117,17 +145,20 @@ def plot(name: str, m: dict, d: dict) -> Path:
 
 def main() -> None:
     kin = PinArm()
-    runs = {}
+    runs, logs = {}, []
     for f in sorted((RESULTS / "s3").glob("*.npz")):
-        m, d = analyze(kin, np.load(f))
+        log = np.load(f)
+        logs.append(log)
+        m, d = analyze(kin, log)
         plot(f.stem, m, d)
         runs[f.stem] = m
-    (RESULTS / "s3_drawing.json").write_text(json.dumps(runs, indent=2))
-    (RESULTS / "s3_drawing.md").write_text(render(runs))
+    model = fit_joint_model(logs)
+    (RESULTS / "s3_drawing.json").write_text(json.dumps({"runs": runs, "joint_model": model}, indent=2))
+    (RESULTS / "s3_drawing.md").write_text(render(runs, model))
     print((RESULTS / "s3_drawing.md").read_text())
 
 
-def render(runs: dict) -> str:
+def render(runs: dict, model: dict) -> str:
     lines = [
         "# S3: drawing on the real arm",
         "",
@@ -155,6 +186,18 @@ def render(runs: dict) -> str:
     for name, m in runs.items():
         cells = [f"{m['joint_err_max_deg'][j]:.2f} (sag {m['sag_at_start_deg'][j]:+.2f})" for j in JOINTS[:5]]
         lines.append(f"| {name} | " + " | ".join(cells) + " |")
+    lines += [
+        "",
+        f"Joint model fitted over all {len(runs)} runs (moving ticks): error = offset - sign(v) * (deadband + "
+        "delay * |v|). The delay includes about one tick (33 ms) from reading right after each command.",
+        "",
+        "| Joint | Offset (sag) | Deadband | Delay | R2 |",
+        "|---|---:|---:|---:|---:|",
+    ]
+    for name, f in model.items():
+        lines.append(
+            f"| {name} | {f['offset_deg']:+.2f} deg | {f['deadband_deg']:.2f} deg | {f['delay_ms']:.0f} ms | {f['r2']:.2f} |"
+        )
     lines += [""] + [f"![{name}](s3_{name}.png)" for name in runs] + [""]
     return "\n".join(lines)
 
