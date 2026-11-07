@@ -263,7 +263,7 @@ Importance: **★★★** load-bearing (a bug here sends wrong commands or chang
 | `tests/test_models.py` (3) | ★★ | arm_control FK = Pinocchio FK; Pinocchio Jacobian = finite differences; the textbook DLS reaches a target |
 | `results/s3/*.npz` | ★★ | Raw logs of the four real-arm runs (evidence; the analysis reads them) |
 | `pyproject.toml`, `uv.lock` | ★★ | Python 3.12; so101-core and arm_control pinned by commit; `hw` extra (LeRobot via so101-core); `so101-draw` entry point; Pink and quadprog as dev dependencies |
-| `README.md`, `DECISIONS.md`, `docs/DESIGN.md`, `CLAUDE.md` | ★ | Write-up and results; decision log; this document; working notes for the next session |
+| `README.md`, `DECISIONS.md`, `docs/DESIGN.md`, `docs/THEORY.md`, `CLAUDE.md` | ★ | Write-up and results; decision log; this document; the theory behind the methods; working notes for the next session |
 
 ### If you read only three files
 

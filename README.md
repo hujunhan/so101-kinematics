@@ -197,4 +197,6 @@ about its own axis. That makes 5 constraints for 5 joints, which is what graspin
 ## Design and decisions
 
 Why the code is built this way, with diagrams and rejected alternatives: [docs/DESIGN.md](docs/DESIGN.md).
+The theory behind it (kinematics, damped least squares, bounded least squares, servo following):
+[docs/THEORY.md](docs/THEORY.md).
 The dated decision log: [DECISIONS.md](DECISIONS.md).
