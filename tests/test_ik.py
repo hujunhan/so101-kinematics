@@ -87,3 +87,15 @@ def test_activeset_step_matches_bvls_on_random_problems():
         dq = bounded_dls_step(J, e, damping, lb, ub)
         assert np.all(dq >= lb - 1e-12) and np.all(dq <= ub + 1e-12)
         assert np.sum((A @ dq - b) ** 2) <= np.sum((A @ ref - b) ** 2) + 1e-9
+
+
+def test_reference_solvers_reach_a_nearby_target(arm):
+    from so101_kinematics.references import PinkSolver, solve_ik_slsqp
+
+    q_t = np.deg2rad([20, -30, 40, 10, 15])
+    T, start = arm.fk(q_t), q_t + 0.2
+    for r in (
+        solve_ik_slsqp(arm, T[:3, 3], pitch_of(q_t), roll_of(q_t), start),
+        PinkSolver(arm).solve(T, pitch_of(q_t), roll_of(q_t), start),
+    ):
+        assert r.converged and np.all(r.q >= LO - 1e-9) and np.all(r.q <= HI + 1e-9)

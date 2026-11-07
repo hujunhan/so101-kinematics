@@ -28,6 +28,7 @@ ROLL_OFFSET = -0.0486795  # rad; wrist_roll axis tilt in the URDF, measured agai
 PITCH_ROW = np.array([0.0, -1.0, -1.0, -1.0, 0.0])
 ROLL_ROW = np.array([0.0, 0.0, 0.0, 0.0, 1.0])
 METHODS = ("activeset", "bvls", "clamp")
+TOL_ANG = np.radians(0.5)  # default angle tolerance for "converged"
 
 
 def pitch_of(q: np.ndarray) -> float:
@@ -99,7 +100,7 @@ def solve_ik(
     damping: float = 0.01,
     max_step: float = 0.5,  # rad, per joint per iteration
     tol_pos: float = 0.002,
-    tol_ang: float = np.radians(0.5),
+    tol_ang: float = TOL_ANG,
     max_iter: int = 100,
     max_stall: int = 5,  # stop after this many iterations in a row without real progress
 ) -> IKResult:

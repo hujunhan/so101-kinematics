@@ -18,7 +18,12 @@ dependencies = [
 hw = ["so101-core[hw] @ git+https://github.com/hujunhan/so101-core@9dbb5cc"]
 
 [dependency-groups]
-dev = ["pytest>=8", "ruff>=0.6"]
+dev = [
+    "pin-pink>=4.4.0",
+    "pytest>=8",
+    "quadprog>=0.1.14",
+    "ruff>=0.6",
+]
 
 [build-system]
 requires = ["hatchling"]
