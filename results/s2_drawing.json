@@ -1,0 +1,69 @@
+{
+  "plane": {
+    "x_m": 0.2,
+    "reachable_cells": 929,
+    "cells": 1710
+  },
+  "circle_center_radius_m": [
+    1.942890293094024e-16,
+    0.28,
+    0.035999999999999976
+  ],
+  "largest_reachable_radius_m": 0.07,
+  "activeset": {
+    "circle": {
+      "points": 114,
+      "not_converged": 0,
+      "fallback_seeds_used": 0,
+      "max_pos_err_mm": 0.012431674335405325,
+      "max_pitch_err_deg": 0.09941754294375355,
+      "max_roll_err_deg": 0.003202822699832283,
+      "max_joint_step_deg": 1.3904566352995966,
+      "max_joint_speed_deg_s": 34.765886631638246,
+      "min_margin_to_limit_deg": 10.73166053629235,
+      "median_solve_ms": 0.12399704428389668,
+      "max_solve_ms": 0.7679980481043458
+    },
+    "square": {
+      "points": 105,
+      "not_converged": 0,
+      "fallback_seeds_used": 0,
+      "max_pos_err_mm": 0.012183048860983006,
+      "max_pitch_err_deg": 0.09894293367422026,
+      "max_roll_err_deg": 0.003072453161193086,
+      "max_joint_step_deg": 1.4356157815576351,
+      "max_joint_speed_deg_s": 36.65760418369951,
+      "min_margin_to_limit_deg": 15.127541295799203,
+      "median_solve_ms": 0.12137397425249219,
+      "max_solve_ms": 0.706875987816602
+    }
+  },
+  "clamp": {
+    "circle": {
+      "points": 114,
+      "not_converged": 0,
+      "fallback_seeds_used": 0,
+      "max_pos_err_mm": 0.012431674335377164,
+      "max_pitch_err_deg": 0.09941754299510042,
+      "max_roll_err_deg": 0.003202822699830295,
+      "max_joint_step_deg": 1.3904566352995138,
+      "max_joint_speed_deg_s": 34.76588663163618,
+      "min_margin_to_limit_deg": 10.731660536292363,
+      "median_solve_ms": 0.11417802306823432,
+      "max_solve_ms": 0.3880099975503981
+    },
+    "square": {
+      "points": 105,
+      "not_converged": 0,
+      "fallback_seeds_used": 0,
+      "max_pos_err_mm": 0.012183048860982761,
+      "max_pitch_err_deg": 0.09894293367432204,
+      "max_roll_err_deg": 0.0030724531611926883,
+      "max_joint_step_deg": 1.4356157815577133,
+      "max_joint_speed_deg_s": 36.65760418370151,
+      "min_margin_to_limit_deg": 15.127541226892104,
+      "median_solve_ms": 0.11225894559174776,
+      "max_solve_ms": 0.38064696127548814
+    }
+  }
+}

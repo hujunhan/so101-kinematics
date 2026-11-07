@@ -5,12 +5,16 @@ The series plan (M0–M5) is in the so101-core README.
 
 ## Current state
 - S1 done: arm_control (2023) vs Pinocchio benchmark, `results/s1_benchmark.md`.
-- **Next: S2**, simulation only. Build the new IK: position + approach angle (gripper pitch and wrist roll,
-  5 constraints for 5 joints), damped least squares that respects joint limits, aiming at SLSQP-level limit
-  compliance at about 1 ms. Then a simulated drawing on a vertical plane ~20 cm in front of the base.
-  Start by laying out the candidate ways to handle joint limits (clamping, null space, weighting, QP) with
-  their trade-offs and let the user choose.
-- S3 (real arm drawing, tracking error, gravity sag) and S4 (write-up) follow.
+- S2 done (simulation): `src/so101_kinematics/ik.py` (bounded damped least squares, position + pitch +
+  roll, active-set step), reference solvers in `references.py` (SLSQP, Pink), `results/s2_benchmark.md`,
+  simulated circle and square on the plane x = 20 cm in `results/s2_drawing.md`. Decisions in DECISIONS.md.
+  Open points: cold-start success is below SLSQP (159 vs 174 of 200); the bounded step has not yet been shown
+  to beat plain clamping (needs targets near the joint limits); compromise quality when the pitch is
+  unreachable (8.6 mm vs 0.9 mm for SLSQP).
+- **Next: S3**, the real arm draws the shapes. Before anything moves the arm: check so101-core's SafeArm
+  limit margin against the 10 deg margin used for the shapes, decide the drawing speed, tell the user, and
+  have them present with power in reach. Then measure commanded vs measured trajectory, tracking error and
+  gravity sag. S4 is the write-up.
 
 ## How we work
 - Claude writes and runs most of the code. The user does physical work on the arm, makes the key
