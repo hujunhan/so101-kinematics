@@ -194,6 +194,7 @@ shoulder_pan sets the azimuth, so the gripper's yaw is fixed by the target posit
 can hold the gripper's **pitch**, for example pointing straight down for a top-down grasp, and its **roll**
 about its own axis. That makes 5 constraints for 5 joints, which is what grasping in M2 and M5 needs.
 
-## Decisions
+## Design and decisions
 
-See [DECISIONS.md](DECISIONS.md).
+Why the code is built this way, with diagrams and rejected alternatives: [docs/DESIGN.md](docs/DESIGN.md).
+The dated decision log: [DECISIONS.md](DECISIONS.md).

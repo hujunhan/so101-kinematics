@@ -1,6 +1,7 @@
 # Working notes for Claude
 
-M1 of the SO-101 series. Plan, status and results: README.md. Decisions so far: DECISIONS.md.
+M1 of the SO-101 series. Plan, status and results: README.md. Architecture and design rationale: docs/DESIGN.md.
+Decisions so far: DECISIONS.md.
 The series plan (M0–M5) is in the so101-core README.
 
 ## Current state
