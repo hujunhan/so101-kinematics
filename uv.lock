@@ -2027,7 +2027,7 @@ wheels = [
 [[package]]
 name = "so101-core"
 version = "0.1.0"
-source = { git = "https://github.com/hujunhan/so101-core?rev=9dbb5cc#9dbb5cc8898f9f90771ddb44edb725cdc55b2b4c" }
+source = { git = "https://github.com/hujunhan/so101-core?rev=f295ea29dc94bcdc005f8ea922f62362bcfab170#f295ea29dc94bcdc005f8ea922f62362bcfab170" }
 dependencies = [
     { name = "mujoco" },
     { name = "numpy" },
@@ -2070,8 +2070,8 @@ requires-dist = [
     { name = "matplotlib", specifier = ">=3.8" },
     { name = "numpy", specifier = ">=1.26" },
     { name = "pin", specifier = ">=3.0" },
-    { name = "so101-core", git = "https://github.com/hujunhan/so101-core?rev=9dbb5cc" },
-    { name = "so101-core", extras = ["hw"], marker = "extra == 'hw'", git = "https://github.com/hujunhan/so101-core?rev=9dbb5cc" },
+    { name = "so101-core", git = "https://github.com/hujunhan/so101-core?rev=f295ea29dc94bcdc005f8ea922f62362bcfab170" },
+    { name = "so101-core", extras = ["hw"], marker = "extra == 'hw'", git = "https://github.com/hujunhan/so101-core?rev=f295ea29dc94bcdc005f8ea922f62362bcfab170" },
 ]
 provides-extras = ["hw"]
 

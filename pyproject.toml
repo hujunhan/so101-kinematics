@@ -10,12 +10,12 @@ dependencies = [
     "numpy>=1.26",
     "pin>=3.0",          # Pinocchio (reference kinematics)
     "matplotlib>=3.8",
-    "so101-core @ git+https://github.com/hujunhan/so101-core@9dbb5cc",
+    "so101-core @ git+https://github.com/hujunhan/so101-core@f295ea29dc94bcdc005f8ea922f62362bcfab170",
     "arm-control @ git+https://github.com/hujunhan/arm_control@65f2cea30984ae5b4185850b0dfe67dd915e067e",
 ]
 
 [project.optional-dependencies]
-hw = ["so101-core[hw] @ git+https://github.com/hujunhan/so101-core@9dbb5cc"]
+hw = ["so101-core[hw] @ git+https://github.com/hujunhan/so101-core@f295ea29dc94bcdc005f8ea922f62362bcfab170"]
 
 [dependency-groups]
 dev = [
