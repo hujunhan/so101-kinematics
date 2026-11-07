@@ -60,11 +60,19 @@ and 0.5 deg:
 
 - **Limits are respected by every solver here** (200/200 inside the limits, the clamp baseline too).
   On random in-limit targets the bounded step does **not** clearly beat plain clamping: cold start is even a
-  little worse (159 vs 163). I have not yet tested targets close to the joint limits, which is where the
-  difference should show.
+  little worse (159 vs 163).
+- **Stress test with targets 0.5-5 deg from a limit** ([results/s2_near_limits.md](results/s2_near_limits.md),
+  500 targets): the bounded step still does not win. Cold: ours 244, clamp 273, SLSQP 286, Pink 187 of 500
+  (only-ours vs only-clamp: 35 vs 64). Far start: 486 vs 481 (13 vs 8, within noise). Warm: 500 vs 500.
+  Diagnosis of the 256 cold failures of ours: 174 end at a genuine constrained stationary point, a local
+  minimum on the limit boundary. Clamping rarely does (6 of 227); its steps are not descent steps, so it
+  sometimes slides out. So the bounded step is a correct local solver, and its remaining failures are a
+  seeding problem (where to start), not a stepping problem. The reason clamping escapes more often is my
+  reading of those numbers, not something I tested.
 - **Speed:** about 1 ms from a cold start and 0.1 ms warm, 3-25x faster than SLSQP. The cold-start median
   was 0.75 ms before the weights below were changed.
-- **Cold start is the weak spot** (SLSQP finds 15 more). Drawing uses warm starts, where it is 200/200.
+- **Cold start is the weak spot** (SLSQP finds 15 more, 42 more near the limits). Drawing uses warm starts,
+  where it is 200/200 in both tests.
 - **Position first is only soft.** With 5 constraints for 5 joints there is no null space, so the priority
   between position and angles is a weight. At 0.05 per rad an unreachable pitch cost about 17 mm of
   position; 0.01 per rad brings that to 0.8 mm. The weight and the damping must be chosen together (a smaller

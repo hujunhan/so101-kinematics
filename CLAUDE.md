@@ -8,9 +8,11 @@ The series plan (M0–M5) is in the so101-core README.
 - S2 done (simulation): `src/so101_kinematics/ik.py` (bounded damped least squares, position + pitch +
   roll, active-set step), reference solvers in `references.py` (SLSQP, Pink), `results/s2_benchmark.md`,
   simulated circle and square on the plane x = 20 cm in `results/s2_drawing.md`. Decisions in DECISIONS.md.
-  Open points: cold-start success is below SLSQP (159 vs 174 of 200); the bounded step has not yet been shown
-  to beat plain clamping (needs targets near the joint limits); compromise quality when the pitch is
-  unreachable (8.6 mm vs 0.9 mm for SLSQP).
+  Open points: cold-start success is below SLSQP (159 vs 174 of 200; 244 vs 286 of 500 near the limits)
+  and below plain clamping near the limits; most cold failures are genuine local minima on a limit, so the
+  fix is seeding (structured start: roll and the pitch sum are known exactly; or closed-form planar IK), not a
+  better step. Compromise quality when the pitch is unreachable: 8.6 mm vs 0.9 mm for SLSQP.
+  `results/s2_near_limits.md` shows the bounded step does not beat clamping, so do not claim it does.
 - **Next: S3**, the real arm draws the shapes. Before anything moves the arm: check so101-core's SafeArm
   limit margin against the 10 deg margin used for the shapes, decide the drawing speed, tell the user, and
   have them present with power in reach. Then measure commanded vs measured trajectory, tracking error and

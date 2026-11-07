@@ -1,0 +1,138 @@
+{
+  "ik": {
+    "cold": {
+      "ours (active set)": {
+        "success": 244,
+        "in_limits": 500,
+        "failed_at_limit": 236,
+        "median_ms": 1.560595992486924,
+        "p95_ms": 14.921586256241422
+      },
+      "clamp baseline": {
+        "success": 273,
+        "in_limits": 500,
+        "failed_at_limit": 195,
+        "median_ms": 0.6085050117690116,
+        "p95_ms": 4.055538892862387
+      },
+      "SLSQP": {
+        "success": 286,
+        "in_limits": 500,
+        "failed_at_limit": 192,
+        "median_ms": 2.9352770070545375,
+        "p95_ms": 3.8938792451517656
+      },
+      "Pink (6-D pose)": {
+        "success": 187,
+        "in_limits": 500,
+        "failed_at_limit": 251,
+        "median_ms": 9.613364498363808,
+        "p95_ms": 9.83215146115981
+      }
+    },
+    "far": {
+      "ours (active set)": {
+        "success": 486,
+        "in_limits": 500,
+        "failed_at_limit": 6,
+        "median_ms": 0.25317800464108586,
+        "p95_ms": 0.6628379633184517
+      },
+      "clamp baseline": {
+        "success": 481,
+        "in_limits": 500,
+        "failed_at_limit": 16,
+        "median_ms": 0.18459695274941623,
+        "p95_ms": 0.556416047038509
+      },
+      "SLSQP": {
+        "success": 485,
+        "in_limits": 500,
+        "failed_at_limit": 3,
+        "median_ms": 2.396797004621476,
+        "p95_ms": 2.95780525484588
+      },
+      "Pink (6-D pose)": {
+        "success": 494,
+        "in_limits": 500,
+        "failed_at_limit": 6,
+        "median_ms": 0.43814550735987723,
+        "p95_ms": 1.5958794479956846
+      }
+    },
+    "warm": {
+      "ours (active set)": {
+        "success": 500,
+        "in_limits": 500,
+        "failed_at_limit": 0,
+        "median_ms": 0.07482650107704103,
+        "p95_ms": 0.168722536182031
+      },
+      "clamp baseline": {
+        "success": 500,
+        "in_limits": 500,
+        "failed_at_limit": 0,
+        "median_ms": 0.06880398723296821,
+        "p95_ms": 0.11339704506099224
+      },
+      "SLSQP": {
+        "success": 499,
+        "in_limits": 500,
+        "failed_at_limit": 0,
+        "median_ms": 1.9895985024049878,
+        "p95_ms": 2.512260267394595
+      },
+      "Pink (6-D pose)": {
+        "success": 500,
+        "in_limits": 500,
+        "failed_at_limit": 0,
+        "median_ms": 0.15085050836205482,
+        "p95_ms": 0.34973471483681345
+      }
+    }
+  },
+  "paired": {
+    "cold": {
+      "clamp baseline": {
+        "only_ours": 35,
+        "only_other": 64
+      },
+      "SLSQP": {
+        "only_ours": 14,
+        "only_other": 56
+      },
+      "Pink (6-D pose)": {
+        "only_ours": 94,
+        "only_other": 37
+      }
+    },
+    "far": {
+      "clamp baseline": {
+        "only_ours": 13,
+        "only_other": 8
+      },
+      "SLSQP": {
+        "only_ours": 9,
+        "only_other": 8
+      },
+      "Pink (6-D pose)": {
+        "only_ours": 4,
+        "only_other": 12
+      }
+    },
+    "warm": {
+      "clamp baseline": {
+        "only_ours": 0,
+        "only_other": 0
+      },
+      "SLSQP": {
+        "only_ours": 1,
+        "only_other": 0
+      },
+      "Pink (6-D pose)": {
+        "only_ours": 0,
+        "only_other": 0
+      }
+    }
+  }
+}
