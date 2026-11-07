@@ -1,4 +1,46 @@
 {
+  "circle_2cms_20261106_173817": {
+    "status": "complete",
+    "speed_cm_s": 2.0,
+    "ticks": 341,
+    "duration_s": 11.335549358977005,
+    "max_tick_ms": 34.07901304308325,
+    "err_median_mm": 3.771319839154967,
+    "err_max_mm": 9.539615348284702,
+    "offset_mm": [
+      0.21682231695504492,
+      0.23086878356469384,
+      -3.497332984828676
+    ],
+    "shape_err_median_mm": 2.835158263139184,
+    "shape_err_max_mm": 6.213751397459296,
+    "along_mean_mm": -2.8144149977166055,
+    "cross_median_mm": 0.7613293065002279,
+    "delay_ms": 133.33333333333334,
+    "after_delay_median_mm": 0.9996600176053626,
+    "size_cmd_cm": [
+      7.19877525701316,
+      7.199248867379671
+    ],
+    "size_meas_cm": [
+      7.029903375743743,
+      7.374104823097036
+    ],
+    "joint_err_max_deg": {
+      "shoulder_pan": 1.0820683852284125,
+      "shoulder_lift": 1.6070575031110101,
+      "elbow_flex": 2.875254681747208,
+      "wrist_flex": 1.3628545553663391,
+      "wrist_roll": 0.4187063067621275
+    },
+    "sag_at_start_deg": {
+      "shoulder_pan": -0.33318368454279007,
+      "shoulder_lift": 0.5576823419179083,
+      "elbow_flex": -1.7332118128216543,
+      "wrist_flex": 0.17241178594482537,
+      "wrist_roll": 0.41532855001577373
+    }
+  },
   "square_2cms_20261106_173448": {
     "status": "complete",
     "speed_cm_s": 2.0,
