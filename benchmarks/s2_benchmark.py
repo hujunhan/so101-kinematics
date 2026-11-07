@@ -17,7 +17,7 @@ from pathlib import Path
 
 import numpy as np
 
-from so101_kinematics.ik import solve_ik
+from so101_kinematics.ik import W_ORI, solve_ik
 from so101_kinematics.models import HI, LO, N, PinArm
 from so101_kinematics.references import PinkSolver, solve_ik_slsqp
 
@@ -93,7 +93,7 @@ def main() -> None:
 
     # Weight sweep on the same unreachable-pitch targets (ours only): how soft is "position first"?
     sweep = {}
-    for w_ori in (0.05, 0.02, 0.01, 0.005, 0.002):
+    for w_ori in (0.05, 0.02, W_ORI, 0.005, 0.002):
         pos_errs, pitch_errs, n_ok = [], [], 0
         for T, _, r in targets:
             res = solve_ik(arm, T[:3, 3], -np.pi / 2, r, np.zeros(N), w_ori=w_ori)
@@ -125,7 +125,7 @@ def render(results: dict, down: dict, sweep: dict) -> str:
         "# S2 benchmark: position + approach angle IK (simulation)",
         "",
         f"{N_TARGETS} random reachable targets (pose of random in-limit configurations), seed {SEED}. Success: "
-        "position error < 2 mm and pitch / roll error < 0.5 deg. Weights: position 1 per m, angles 0.05 per rad. "
+        f"position error < 2 mm and pitch / roll error < 0.5 deg. Weights: position 1 per m, angles {W_ORI} per rad. "
         "Single run, single thread; times are per solve including Python overhead.",
         "",
     ]

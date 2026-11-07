@@ -53,3 +53,13 @@
   (weights), not a hard guarantee.
 - **Options:** Euler angles; rotation-matrix error; fail immediately when unreachable; strict task priority
   (needs a null space this arm does not have).
+
+## 2026-11-06: angle weight 0.01 per rad, damping 0.003
+- **Decided:** default weights position 1 per m, angles 0.01 per rad, damping 0.003.
+- **Why:** with 0.05 per rad the compromise for an unreachable pitch gave up ~17 mm of position (median);
+  0.01 brings that to ~0.8 mm. But the angle rows scale with the weight, so the old damping 0.01 halved the
+  angle steps and cold-start success fell 173 -> 145 of 200; damping 0.003 recovers 159/200. Damping and
+  weight have to be chosen together.
+- **Cost:** cold-start success 173 -> 159 of 200 against the old weight; warm and far starts are unaffected.
+- **Options:** keep 0.05 (better convergence, poor position priority); smaller weights (0.005, 0.002) gave
+  fewer fully reached poses.

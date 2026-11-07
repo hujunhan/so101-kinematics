@@ -11,7 +11,17 @@ import pinocchio as pin
 from scipy.optimize import minimize
 from so101_core.model import ARM_JOINTS
 
-from so101_kinematics.ik import PITCH_ROW, ROLL_ROW, TOL_ANG, IKResult, pitch_of, roll_of, wrap
+from so101_kinematics.ik import (
+    DAMPING,
+    PITCH_ROW,
+    ROLL_ROW,
+    TOL_ANG,
+    W_ORI,
+    IKResult,
+    pitch_of,
+    roll_of,
+    wrap,
+)
 from so101_kinematics.models import HI, LO, TOOL_FRAME, N, PinArm
 
 
@@ -30,7 +40,7 @@ def solve_ik_slsqp(
     q0,
     *,
     w_pos: float = 1.0,
-    w_ori: float = 0.05,
+    w_ori: float = W_ORI,
     tol_pos: float = 0.002,
     tol_ang: float = TOL_ANG,
     max_iter: int = 100,
@@ -58,7 +68,7 @@ def solve_ik_slsqp(
 class PinkSolver:
     """Pink on the 5 arm joints (the gripper joint is locked out of the model)."""
 
-    def __init__(self, arm: PinArm, w_pos: float = 1.0, w_ori: float = 0.05, damping: float = 1e-4):
+    def __init__(self, arm: PinArm, w_pos: float = 1.0, w_ori: float = W_ORI, damping: float = DAMPING**2):
         import pink
         from pink.tasks import FrameTask
 

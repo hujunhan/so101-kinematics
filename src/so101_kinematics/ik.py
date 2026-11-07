@@ -29,6 +29,9 @@ PITCH_ROW = np.array([0.0, -1.0, -1.0, -1.0, 0.0])
 ROLL_ROW = np.array([0.0, 0.0, 0.0, 0.0, 1.0])
 METHODS = ("activeset", "bvls", "clamp")
 TOL_ANG = np.radians(0.5)  # default angle tolerance for "converged"
+# Damping is tied to W_ORI: with W_ORI = 0.01 a damping of 0.01 halves the angle steps (145/200 cold).
+DAMPING = 0.003
+W_ORI = 0.01  # default angle weight per rad (position: 1 per m); 1 deg of angle error ~ 0.17 mm of position
 
 
 def pitch_of(q: np.ndarray) -> float:
@@ -96,8 +99,8 @@ def solve_ik(
     *,
     method: str = "activeset",
     w_pos: float = 1.0,
-    w_ori: float = 0.05,  # per rad; 1 deg of angle error costs about as much as 0.9 mm of position error
-    damping: float = 0.01,
+    w_ori: float = W_ORI,
+    damping: float = DAMPING,
     max_step: float = 0.5,  # rad, per joint per iteration
     tol_pos: float = 0.002,
     tol_ang: float = TOL_ANG,

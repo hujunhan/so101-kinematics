@@ -2,85 +2,85 @@
   "ik": {
     "cold": {
       "ours: bounded DLS, active set": {
-        "success": 173,
+        "success": 159,
         "in_limits": 200,
-        "failed_at_limit": 23,
-        "median_ms": 0.7303330057766289,
-        "p95_ms": 2.366909966804082,
-        "median_iters": 7.0
+        "failed_at_limit": 36,
+        "median_ms": 1.0017164750024676,
+        "p95_ms": 2.995630769873966,
+        "median_iters": 9.0
       },
       "ours: bounded DLS, scipy BVLS": {
-        "success": 173,
+        "success": 159,
         "in_limits": 200,
-        "failed_at_limit": 23,
-        "median_ms": 0.8692090050317347,
-        "p95_ms": 2.7536939422134257,
-        "median_iters": 7.0
+        "failed_at_limit": 36,
+        "median_ms": 1.2070295051671565,
+        "p95_ms": 3.4434409026289337,
+        "median_iters": 9.0
       },
       "baseline: DLS + clamp": {
         "success": 163,
         "in_limits": 200,
         "failed_at_limit": 34,
-        "median_ms": 0.3919720184057951,
-        "p95_ms": 0.9485362272243938,
-        "median_iters": 9.0
+        "median_ms": 0.4920894862152636,
+        "p95_ms": 1.2200746103189883,
+        "median_iters": 11.0
       },
       "reference: SLSQP + limits": {
-        "success": 186,
+        "success": 174,
         "in_limits": 200,
-        "failed_at_limit": 11,
-        "median_ms": 2.1888824994675815,
-        "p95_ms": 2.7464534679893404,
-        "median_iters": 43.0
+        "failed_at_limit": 23,
+        "median_ms": 3.0240989581216127,
+        "p95_ms": 4.119669285137203,
+        "median_iters": 58.0
       },
       "reference: Pink (QP, 6-D pose)": {
-        "success": 166,
+        "success": 159,
         "in_limits": 200,
-        "failed_at_limit": 28,
-        "median_ms": 0.629828980891034,
-        "p95_ms": 9.724652674049139,
-        "median_iters": 6.0
+        "failed_at_limit": 31,
+        "median_ms": 0.8431114838458598,
+        "p95_ms": 9.979192438186146,
+        "median_iters": 8.0
       }
     },
     "far": {
       "ours: bounded DLS, active set": {
-        "success": 199,
+        "success": 198,
         "in_limits": 200,
         "failed_at_limit": 0,
-        "median_ms": 0.22384902695193887,
-        "p95_ms": 0.435393117368221,
-        "median_iters": 3.0
+        "median_ms": 0.28454800485633314,
+        "p95_ms": 0.6227895704796538,
+        "median_iters": 4.0
       },
       "ours: bounded DLS, scipy BVLS": {
-        "success": 199,
+        "success": 198,
         "in_limits": 200,
         "failed_at_limit": 0,
-        "median_ms": 0.28679450042545795,
-        "p95_ms": 0.558952739811502,
-        "median_iters": 3.0
+        "median_ms": 0.38489699363708496,
+        "p95_ms": 0.8025022514630108,
+        "median_iters": 4.0
       },
       "baseline: DLS + clamp": {
-        "success": 197,
+        "success": 196,
         "in_limits": 200,
-        "failed_at_limit": 2,
-        "median_ms": 0.15110851381905377,
-        "p95_ms": 0.3571803972590713,
-        "median_iters": 3.0
+        "failed_at_limit": 3,
+        "median_ms": 0.19587052520364523,
+        "p95_ms": 0.5963469651760533,
+        "median_iters": 4.0
       },
       "reference: SLSQP + limits": {
-        "success": 199,
+        "success": 194,
         "in_limits": 200,
         "failed_at_limit": 0,
-        "median_ms": 2.0123274880461395,
-        "p95_ms": 2.4240396218374363,
-        "median_iters": 40.0
+        "median_ms": 2.464707475155592,
+        "p95_ms": 2.9486676648957646,
+        "median_iters": 48.0
       },
       "reference: Pink (QP, 6-D pose)": {
-        "success": 200,
+        "success": 199,
         "in_limits": 200,
-        "failed_at_limit": 0,
-        "median_ms": 0.33785749110393226,
-        "p95_ms": 0.6744900863850481,
+        "failed_at_limit": 1,
+        "median_ms": 0.3636579785961658,
+        "p95_ms": 1.3519302388885965,
         "median_iters": 3.0
       }
     },
@@ -89,92 +89,92 @@
         "success": 200,
         "in_limits": 200,
         "failed_at_limit": 0,
-        "median_ms": 0.0726940343156457,
-        "p95_ms": 0.12202895013615488,
+        "median_ms": 0.07637546514160931,
+        "p95_ms": 0.14529051550198332,
         "median_iters": 1.0
       },
       "ours: bounded DLS, scipy BVLS": {
         "success": 200,
         "in_limits": 200,
         "failed_at_limit": 0,
-        "median_ms": 0.09807752212509513,
-        "p95_ms": 0.17200517177116126,
+        "median_ms": 0.10267947800457478,
+        "p95_ms": 0.19265130977146327,
         "median_iters": 1.0
       },
       "baseline: DLS + clamp": {
         "success": 200,
         "in_limits": 200,
         "failed_at_limit": 0,
-        "median_ms": 0.06825599120929837,
-        "p95_ms": 0.10886323580052704,
+        "median_ms": 0.07163951522670686,
+        "p95_ms": 0.11833060125354675,
         "median_iters": 1.0
       },
       "reference: SLSQP + limits": {
-        "success": 200,
+        "success": 199,
         "in_limits": 200,
         "failed_at_limit": 0,
-        "median_ms": 1.8991609977092594,
-        "p95_ms": 2.2211009694729,
-        "median_iters": 37.0
+        "median_ms": 2.177852496970445,
+        "p95_ms": 2.5287429481977597,
+        "median_iters": 43.0
       },
       "reference: Pink (QP, 6-D pose)": {
         "success": 200,
         "in_limits": 200,
         "failed_at_limit": 0,
-        "median_ms": 0.1519955403637141,
-        "p95_ms": 0.2528566517867148,
+        "median_ms": 0.1527325075585395,
+        "p95_ms": 0.2964421757496891,
         "median_iters": 1.0
       }
     }
   },
   "pitch_down": {
     "ours: bounded DLS, active set": {
-      "reached": 40,
+      "reached": 39,
       "in_limits": 200,
-      "compromise_cases": 160,
-      "median_pos_err_mm": 26.36495862866625,
-      "median_pitch_err_deg": 63.91635031976662,
-      "p95_pos_err_mm": 64.17990971740517
+      "compromise_cases": 161,
+      "median_pos_err_mm": 8.595203755327814,
+      "median_pitch_err_deg": 68.74187103124876,
+      "p95_pos_err_mm": 25.58930708359234
     },
     "reference: SLSQP + limits": {
       "reached": 40,
       "in_limits": 200,
       "compromise_cases": 160,
-      "median_pos_err_mm": 19.301705230039822,
-      "median_pitch_err_deg": 64.73973535323731,
-      "p95_pos_err_mm": 47.91071243146642
+      "median_pos_err_mm": 0.9171586355244705,
+      "median_pitch_err_deg": 71.1256516034552,
+      "p95_pos_err_mm": 5.54143476087679
     }
   },
   "sweep": {
     "0.05": {
-      "reached": 40,
-      "median_pos_err_mm": 16.92572974313432,
-      "p95_pos_err_mm": 55.83309025538065,
-      "median_pitch_err_deg": 41.98738882479144
+      "reached": 41,
+      "median_pos_err_mm": 18.513253969019758,
+      "p95_pos_err_mm": 59.56776547483992,
+      "median_pitch_err_deg": 42.069855614213424
     },
     "0.02": {
       "reached": 40,
-      "median_pos_err_mm": 2.6938710620314206,
-      "p95_pos_err_mm": 45.865385423516464,
-      "median_pitch_err_deg": 49.70452126405207
+      "median_pos_err_mm": 9.107881979387283,
+      "p95_pos_err_mm": 46.01296546140187,
+      "median_pitch_err_deg": 47.71621631232156
     },
     "0.01": {
       "reached": 39,
-      "median_pos_err_mm": 0.665253415573571,
-      "p95_pos_err_mm": 22.48255694744591,
-      "median_pitch_err_deg": 51.42201541404946
+      "median_pos_err_mm": 0.7999481908453905,
+      "p95_pos_err_mm": 23.61803433130217,
+      "median_pitch_err_deg": 51.34448739000585
     },
     "0.005": {
-      "reached": 29,
-      "median_pos_err_mm": 0.1678818693270553,
-      "p95_pos_err_mm": 19.664988559021666,
-      "median_pitch_err_deg": 51.763564674072235
+      "reached": 38,
+      "median_pos_err_mm": 0.16669292618028,
+      "p95_pos_err_mm": 20.693368529723358,
+      "median_pitch_err_deg": 51.180966733823546
     },
     "0.002": {
-      "reached": 0,
-      "median_pos_err_mm": 0.033128942041067366,
-      "p95_pos_err_mm": 19.234149999851347,
-      "median_pitch_err_deg": 62.356355047082914
+      "reached": 32,
+      "median_pos_err_mm": 0.04167655946284818,
+      "p95_pos_err_mm": 20.60842144056053,
+      "median_pitch_err_deg": 50.95830898876123
     }
   }
 }
