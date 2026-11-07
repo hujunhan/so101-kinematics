@@ -1,6 +1,6 @@
 """S2 drawing in simulation: a circle and a square on a vertical plane in front of the base.
 
-1. Reachability map of the plane (x = X_PLANE in the base frame, tool pointing forward: pitch 0, roll 0),
+1. Reachability map of the plane (x = X_PLANE in the base frame, tool horizontal: pitch 0, roll 0),
    solved on a coarse grid from a few seeds. A cell is reachable if some seed converges (so it is a lower
    bound). The shapes are placed in the largest reachable circle, shrunk by a margin.
 2. Each shape is discretised every 2 mm and solved point by point, warm-started from the previous point.
@@ -12,7 +12,6 @@ Writes results/s2_drawing.md, results/s2_drawing.json, results/s2_workspace.png,
 """
 
 import json
-import time
 from pathlib import Path
 
 import matplotlib
@@ -22,38 +21,24 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage import distance_transform_edt
 
-from so101_kinematics.ik import solve_ik
+from so101_kinematics.drawing import (
+    SPEED,
+    STEP,
+    X_PLANE,
+    make_shapes,
+    solve_point,
+    track,
+)
 from so101_kinematics.models import HI, LO, N, PinArm
 
-X_PLANE = 0.20  # m in front of the base-frame origin (the shoulder_pan axis is 0.039 m ahead of it)
-PITCH, ROLL = 0.0, 0.0  # tool pointing straight forward, perpendicular to the plane
 Z_MIN, Z_MAX, Y_HALF = 0.03, 0.40, 0.22  # scan window (z_min keeps clear of the table)
 GRID = 0.01  # m, reachability map resolution
 MIN_MARGIN_DEG = 10.0  # shapes must stay at least this far from every joint limit (the real arm adds its own)
-TOL_POS, TOL_ANG = 0.0002, np.radians(0.1)  # tight: the errors reported are tracking errors, not thresholds
-STEP = 0.002  # m between path points
-SPEED = 0.05  # m/s, assumed drawing speed for the implied joint speeds
 OUT = Path(__file__).resolve().parent.parent / "results"
 
 # Palette (reference instance, slots 1-2, light surface) and neutrals
 SURFACE, INK, MUTED, GRIDC = "#fcfcfb", "#0b0b0b", "#52514e", "#e4e3df"
 BLUE, ORANGE = "#2a78d6", "#eb6834"
-
-SEEDS = [
-    np.zeros(N),
-    np.array([0.0, 0.6, -1.2, 0.6, 0.0]),  # lift + elbow + wrist_flex = 0, i.e. pitch 0
-    np.array([0.0, -0.6, 1.2, -0.6, 0.0]),
-]
-
-
-def solve_point(arm, y, z, q_prev, method="activeset"):
-    """Solve one plane point, warm from q_prev; fall back to the fixed seeds when that does not converge."""
-    target = np.array([X_PLANE, y, z])
-    for k, q0 in enumerate([q_prev, *SEEDS] if q_prev is not None else SEEDS):
-        res = solve_ik(arm, target, PITCH, ROLL, q0, method=method, tol_pos=TOL_POS, tol_ang=TOL_ANG)
-        if res.converged:
-            return res, k
-    return res, -1
 
 
 def reach_map(arm):
@@ -77,19 +62,6 @@ def best_center(ys, zs, ok):
     return ys[j - 1], zs[i - 1], dist[i, j]
 
 
-def make_shapes(yc, zc, r):
-    t = np.arange(0, 2 * np.pi * r, STEP) / r
-    circle = np.stack([yc + r * np.cos(t), zc + r * np.sin(t)], 1)
-    h = r / np.sqrt(2)  # the square sits inside the circle's footprint
-    corners = np.array([[-h, -h], [h, -h], [h, h], [-h, h], [-h, -h]]) + [yc, zc]
-    pts = []
-    for a, b in zip(corners[:-1], corners[1:], strict=True):
-        n = int(np.ceil(np.linalg.norm(b - a) / STEP))
-        pts += [a + (b - a) * k / n for k in range(n)]
-    pts.append(corners[-1])
-    return {"circle": circle, "square": np.array(pts)}
-
-
 def fit_shapes(arm, yc, zc, r_max):
     """Largest shapes (shrinking from the reachable circle) that stay MIN_MARGIN_DEG away from every limit."""
     r = r_max
@@ -103,35 +75,6 @@ def fit_shapes(arm, yc, zc, r_max):
             return shapes, r
         r -= 0.002
     raise RuntimeError("no shape size keeps the joint-limit margin")
-
-
-def track(arm, path, method):
-    q_prev, qs, errs, times, fallbacks, fails = None, [], [], [], 0, 0
-    for y, z in path:
-        t0 = time.perf_counter()
-        res, k = solve_point(arm, y, z, q_prev, method)
-        times.append(time.perf_counter() - t0)
-        fails += not res.converged
-        fallbacks += q_prev is not None and k > 0  # the warm start did not converge, a fixed seed did
-        errs.append((res.pos_err, abs(res.pitch_err), abs(res.roll_err)))
-        qs.append(res.q)
-        q_prev = res.q
-    qs, errs, times = np.array(qs), np.array(errs), np.array(times)
-    dq = np.degrees(np.abs(np.diff(qs, axis=0)))
-    ds = np.linalg.norm(np.diff(path, axis=0), axis=1)
-    return qs, {
-        "points": len(path),
-        "not_converged": int(fails),
-        "fallback_seeds_used": int(fallbacks),
-        "max_pos_err_mm": float(errs[:, 0].max() * 1e3),
-        "max_pitch_err_deg": float(np.degrees(errs[:, 1].max())),
-        "max_roll_err_deg": float(np.degrees(errs[:, 2].max())),
-        "max_joint_step_deg": float(dq.max()),
-        "max_joint_speed_deg_s": float((dq / (ds[:, None] / SPEED)).max()),
-        "min_margin_to_limit_deg": float(np.degrees(np.minimum(qs - LO, HI - qs).min())),
-        "median_solve_ms": float(np.median(times) * 1e3),
-        "max_solve_ms": float(times.max() * 1e3),
-    }
 
 
 def style(ax):
@@ -169,7 +112,7 @@ def plot_workspace(ys, zs, ok, shapes, circle_info):
     ax.set_xlabel("y, left-right (cm)", color=MUTED)
     ax.set_ylabel("z, height (cm)", color=MUTED)
     ax.set_title(
-        f"Drawing plane x = {X_PLANE * 100:.0f} cm, tool pointing forward: reachable region",
+        f"Drawing plane x = {X_PLANE * 100:.0f} cm, tool horizontal: reachable region",
         color=INK,
         fontsize=11,
         loc="left",
@@ -238,7 +181,8 @@ def render(res: dict) -> str:
     lines = [
         "# S2 drawing in simulation",
         "",
-        f"Plane x = {p['x_m'] * 100:.0f} cm in front of the base-frame origin, tool pointing forward (pitch 0, roll 0). "
+        f"Plane x = {p['x_m'] * 100:.0f} cm in front of the base-frame origin, tool horizontal (pitch 0, roll 0; its yaw follows shoulder_pan, so off the centre line it is not "
+        "perpendicular to the plane). "
         f"Reachable: {p['reachable_cells']}/{p['cells']} cells of {GRID * 100:.0f} cm (lower bound, a few seeds). "
         f"Circle: center y = {yc * 100:.1f} cm, z = {zc * 100:.1f} cm, radius {r * 100:.1f} cm "
         f"(the largest reachable circle has radius {res['largest_reachable_radius_m'] * 100:.1f} cm, "

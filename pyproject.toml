@@ -14,6 +14,9 @@ dependencies = [
     "arm-control @ git+https://github.com/hujunhan/arm_control@65f2cea30984ae5b4185850b0dfe67dd915e067e",
 ]
 
+[project.scripts]
+so101-draw = "so101_kinematics.s3:main"
+
 [project.optional-dependencies]
 hw = ["so101-core[hw] @ git+https://github.com/hujunhan/so101-core@f295ea29dc94bcdc005f8ea922f62362bcfab170"]
 

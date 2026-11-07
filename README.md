@@ -80,8 +80,9 @@ and 0.5 deg:
   hard cases where the pitch cannot be reached is 8.6 mm for ours against 0.9 mm for SLSQP, so the
   compromise is not yet as good as it could be.
 - **Drawing (simulated):** a circle (radius 3.6 cm) and a square on the plane 20 cm in front of the base,
-  tool pointing forward, 2 mm between points, each point warm-started from the previous one: all points
-  converge, position error under 0.02 mm, pitch/roll within 0.1 deg, no joint jumps (largest step 1.4 deg per
+  tool horizontal (its yaw follows shoulder_pan, so it is not perpendicular to the plane off the centre
+  line), 2 mm between points, each point warm-started from the previous one: all points
+  converge, position error at most 0.2 mm (the solver tolerance), pitch/roll within 0.1 deg, no joint jumps (largest step 1.4 deg per
   2 mm), 0.12 ms per point. The shapes are sized to keep every joint at least 10 deg from its limit; the
   reachable region at pitch 0 is bounded at the top by shoulder_lift, and the largest circle would come
   within 2 deg of that limit.

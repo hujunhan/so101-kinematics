@@ -17,34 +17,15 @@ from pathlib import Path
 
 import mujoco
 import numpy as np
-from s2_drawing import STEP, make_shapes, track
 from so101_core.arm import Rate
 from so101_core.config import JointMap
 from so101_core.safety import SafetyLayer
 from so101_core.twin import Twin
 
+from so101_kinematics.drawing import make_shapes, ramp, resample, track
 from so101_kinematics.models import PinArm
 
-RAMP_SPEED = np.radians(20.0)  # rad/s, SafeArm.move_to default
 RESULTS = Path(__file__).resolve().parent.parent / "results"
-
-
-def ramp(q_from, q_goal, safety, hz):
-    """Joint-space ramp like SafeArm.move_to: constant speed, capped per tick, goal clipped to the safe range."""
-    step = min(RAMP_SPEED / hz, safety.cfg.max_step_rad)
-    goal, _ = safety.clip(q_goal)
-    q, out = q_from.copy(), []
-    while not np.allclose(q, goal):
-        q = q + np.clip(goal - q, -step, step)
-        out.append(q.copy())
-    return out
-
-
-def resample(qs, speed, hz):
-    """Joint path solved every STEP metres -> one point per tick at the given tool speed (m/s)."""
-    s = np.arange(len(qs)) * STEP
-    ticks = np.arange(0.0, s[-1], speed / hz)
-    return [np.array([np.interp(t, s, qs[:, j]) for j in range(qs.shape[1])]) for t in ticks]
 
 
 def plan(speed, hz):
@@ -56,7 +37,7 @@ def plan(speed, hz):
     paths = {}
     for name, path in make_shapes(yc, zc, r).items():
         qs, _ = track(arm, path, "activeset")
-        paths[name] = [np.append(q, grip) for q in resample(qs, speed, hz)]
+        paths[name] = [np.append(q, grip) for q in resample(qs, path, speed, hz)]
     ticks, labels, q = [], [], jm.rest.copy()
     for name in ("circle", "square"):
         for kind, seq in (
