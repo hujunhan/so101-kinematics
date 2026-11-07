@@ -94,7 +94,7 @@ flowchart LR
     fk --> e["error e (5)<br/>xyz x 1 per m<br/>pitch, roll x 0.01 per rad"]
     fk --> J["J (5x5)<br/>3 Pinocchio rows<br/>+ 2 constant rows"]
     q --> b["bounds on dq<br/>max(LO-q, -0.5) .. min(HI-q, 0.5)"]
-    e --> step["bounded_dls_step<br/>min ‖J dq − e‖² + 0.003² ‖dq‖²"]
+    e --> step["bounded_dls_step<br/>min |J dq − e|² + 0.003² |dq|²"]
     J --> step
     b --> step
     step --> q2["q + dq<br/>(inside the limits by construction)"]
