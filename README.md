@@ -7,7 +7,23 @@ M1 of the [SO-101 series](https://github.com/hujunhan/so101-core). It covers kin
 - A joint-limited IK that solves for position **plus an approach angle**.
 - The real arm draws shapes, with the tracking error measured.
 
-> **Status (2026-11-06):** S1-S3 done: simulation benchmark, joint-limited IK, and the real arm drawing; S4 (write-up) next.
+> **Status (2026-11-06):** done (S1-S4). Open points are handed to M2, see the end.
+
+## Summary
+
+- **The 2023 code is correct but slow, and blind to joint limits.** Its FK matches Pinocchio to 1e-16 m. Its
+  IK takes about 70 ms, and 31% of its solutions are joint angles the arm cannot take; only its SLSQP solver
+  respects the limits, at 0.6 s per solve.
+- **A new IK solves position + approach angle (pitch, roll) within the joint limits in about 1 ms cold and
+  0.1 ms warm**, 3-25x faster than SLSQP. On this arm pitch and roll are linear in the joints, so pointing
+  straight down is not a singularity.
+- **It is not better than naive clamping at finding solutions.** Every solver kept the limits; from a cold
+  start the bounded step found fewer solutions than clamping, even next to the limits, because it settles
+  into local minima on a limit. That is a seeding problem, left open. Warm-started along a path, all of them
+  succeed.
+- **The real arm drew a square and a circle through the safety layer**, at 2 and 5 cm/s, 4-9 mm from the
+  command (median). The error is mostly a ~100 ms servo delay and 0.9 deg of elbow sag, not the IK.
+- **The model and the real arm disagree:** 10 cm on the table measures 8.66 cm by FK. Calibration is M2.
 
 ## Plan
 
@@ -15,7 +31,7 @@ M1 of the [SO-101 series](https://github.com/hujunhan/so101-core). It covers kin
 |---|---|---|
 | **S1** | arm_control packaged and fixed (the 2023 version is tagged `v2023`); simulation benchmark. FK accuracy against Pinocchio; position-only IK solvers compared on success rate, time and joint-limit violations | `results/s1_benchmark.md` |
 | **S2** | New IK: position + approach angle (gripper pitch, wrist roll), damped least squares with joint limits; drawing in simulation | `src/so101_kinematics/ik.py`, `results/s2_benchmark.md`, `results/s2_drawing.md` |
-| **S3** | The real arm draws on a vertical plane ~20 cm in front of the base; commanded vs measured trajectories; tracking error and gravity sag | Video, error plots |
+| **S3** | The real arm draws on a vertical plane ~20 cm in front of the base; commanded vs measured trajectories; tracking error and gravity sag | `so101-draw`, `results/s3_drawing.md` (no video, see DECISIONS) |
 | **S4** | Write-up and decisions/lessons | This README |
 
 ## S1 result: the 2023 code on the SO-101 (simulation)
@@ -111,11 +127,65 @@ they describe how the servos follow, not the absolute accuracy of the model.
   - **Gravity sag**, mostly the elbow: +0.9 deg, about 4-5 mm down at the tool. It does not change with speed.
   - **A small deadband**, 0.1-0.4 deg (largest on the elbow). My first reading of the square plot blamed
     backlash and deadband for the direction-dependent error; the fit shows the delay explains most of it.
-- **Shapes come out taller than commanded** (square 5.09 -> 5.63 cm high at 2 cm/s): along the bottom the arm
-  is still catching up from the ramp, and moving up it lags while moving down it does not fight gravity.
+- **Shapes come out taller than commanded** (square 5.09 -> 5.63 cm high at 2 cm/s): the bottom edge is drawn
+  about 8 mm low and the top edge about 4 mm low. I have not worked out why the sag differs between the two
+  edges; the joint model above does not explain it.
 - **Known issue, not investigated:** a torque-off ruler check gave 8.66 cm by FK for 10 cm on the table, with
   the heights consistent to 1.6 mm. A calibration zero offset of a few degrees on the elbow or wrist would
   explain it (two points cannot tell which). That is M2's subject (calibration); M1 left it.
+
+## Lessons
+
+- **Test the claim, not just the code.** The bounded step was supposed to beat clamping. A baseline, then a
+  stress test next to the limits, showed it does not, and a diagnosis (projected gradient at the end point)
+  showed why. Without the baseline the README would have claimed the opposite.
+- **Use the structure of the arm.** Three parallel flex axes make pitch a sum of joint angles. Euler angles
+  would have been singular at straight down, exactly the pose grasping needs.
+- **Parameters interact.** Lowering the angle weight alone dropped cold-start success from 173 to 145 of 200,
+  because the damping then dominated the angle rows. Weight and damping have to be tuned together.
+- **The safety layer cannot see a wrong solution.** It clips limits and caps steps; a non-converged IK point
+  or a jump to another elbow branch passes it. The path is now checked before it is sent.
+- **Vary one thing to separate causes.** One run at one speed suggested backlash; two speeds showed the lag
+  grows with speed, so it is mostly delay. The first reading was wrong.
+- **Simulation is not the arm.** Everything matched in simulation; a ruler on the table did not (8.66 vs
+  10 cm). Reachability was also not the limit for the drawing size: the joint-limit margin was.
+
+## Reproduce
+
+```bash
+uv sync                                    # simulation only
+uv run pytest
+uv run python benchmarks/s1_benchmark.py   # S1
+uv run python benchmarks/s2_benchmark.py   # S2: cold / far / warm, unreachable pitch, weight sweep
+uv run python benchmarks/s2_near_limits.py # S2: targets next to the limits
+uv run python benchmarks/s2_drawing.py     # S2: reachable region, simulated drawing
+SO101_CONFIG_DIR=<so101-core>/config uv run python benchmarks/s2_replay.py  # MuJoCo replay
+
+uv sync --extra hw                         # real arm (LeRobot)
+SO101_CONFIG_DIR=<so101-core>/config uv run so101-draw readonly
+SO101_CONFIG_DIR=<so101-core>/config uv run so101-draw draw --shape square --speed 2
+uv run python benchmarks/s3_analyze.py     # S3: analysis of results/s3/*.npz
+```
+
+`so101-draw` asks for `yes` before powering the arm and before each motion, and for Enter before releasing
+torque, so run it in a terminal next to the arm.
+
+| File | Role |
+|---|---|
+| `src/so101_kinematics/models.py` | The two backends on the same URDF: arm_control (2023) and Pinocchio |
+| `src/so101_kinematics/ik.py` | The IK: position + pitch + roll, bounded damped least squares (active set), clamp and BVLS variants |
+| `src/so101_kinematics/references.py` | SLSQP and Pink on the same task, for comparison only |
+| `src/so101_kinematics/drawing.py` | Shapes, warm-started joint paths, the checks before a path is sent |
+| `src/so101_kinematics/s3.py` | `so101-draw`: the real-arm stages, all through so101-core's `SafeArm` |
+
+## Handed to M2
+
+- Calibration: the 10 cm ruler check (8.66 cm by FK), likely a zero offset on the elbow or wrist.
+- Feed-forward compensation: command ~100 ms ahead and add the elbow sag, as a direct test of the joint model.
+- Cold-start IK: a structured seed (roll and the pitch sum are known exactly; the rest is a planar
+  two-link problem) for the local minima on the limits.
+- The compromise when the pitch is unreachable (8.6 mm median, against 0.9 mm for SLSQP).
+- A video: the ZED 2 needs to face the drawing plane and keep the room out of frame.
 
 ## Why "position + approach angle"
 

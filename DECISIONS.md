@@ -63,3 +63,13 @@
 - **Cost:** cold-start success 173 -> 159 of 200 against the old weight; warm and far starts are unaffected.
 - **Options:** keep 0.05 (better convergence, poor position priority); smaller weights (0.005, 0.002) gave
   fewer fully reached poses.
+
+## 2026-11-06: S3 without a video; compensation and the ruler discrepancy go to M2
+- **Decided:** no video of the drawing; the S3 deliverable is the logs, the error plots and the joint model.
+  The feed-forward compensation run (command ~100 ms ahead, add the elbow sag) and the ruler discrepancy
+  (8.66 cm by FK for 10 cm) are left for M2 (calibration, servo identification).
+- **Why:** the fixed ZED 2 view does not frame the drawing plane well and shows the room and people, which
+  cannot go into a public repo without reframing or editing. Compensation and calibration are M2's subject;
+  doing them in M1 would split one study across two repos.
+- **Options:** reframe the ZED 2 in front of the drawing plane and record during `so101-draw`; a phone video;
+  run the compensation experiment now as a direct test of the joint model.

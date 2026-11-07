@@ -20,8 +20,9 @@ The series plan (M0–M5) is in the so101-core README.
 - Real-arm runs: the user runs `so101-draw` in their own terminal (it asks for `yes` and for Enter before
   releasing torque, which Claude's shell cannot answer) and pastes the output; Claude analyzes the logs.
   Torque-off reads Claude can run directly.
-- **Next: S4**, the write-up. Optional, user's call: a compensation run (command ~100 ms ahead, add the elbow
-  sag) as a direct test of the joint model; it overlaps with M2 (servo identification).
+- S4 done (2026-11-06): README is the write-up (summary, results, lessons, reproduce, handed to M2).
+  **M1 is complete.** Next is M2 (`so101-calib`) in its own repo; its starting points are in README
+  "Handed to M2". Change this repo only for fixes.
 
 ## How we work
 - Claude writes and runs most of the code. The user does physical work on the arm, makes the key
