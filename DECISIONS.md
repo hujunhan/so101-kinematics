@@ -24,3 +24,32 @@
 - **Why:** no contact with the table, so the safest first powered demo.
 - **Options:** horizontal plane above the table (risk of hitting it); pen on paper (needs contact, which
   position-controlled servos handle poorly).
+
+## 2026-11-06: joint limits in the new IK = bounded damped least squares at every step
+- **Decided:** each IK iteration solves `min ||J dq - e||^2 + lambda^2 ||dq||^2` subject to
+  `q_min - q <= dq <= q_max - q` (limits as hard constraints inside the step), not clamping after the step.
+  Naive clamping is kept as a baseline, SLSQP as the ground truth, Pink (differential IK on Pinocchio, QP with configuration limits) as the main external reference, placo (what LeRobot uses for SO-101) optional later.
+- **Why:** the arm has 5 constraints for 5 joints, so there is no null space to push joints away from
+  limits; the limit has to be part of the step itself. Differential-IK libraries (Pink, mink) do the same
+  with a QP, and the saturation-in-the-null-space (SNS) method freezes joints that would exceed their
+  bounds. Plain clamping breaks the iteration direction and is what TRAC-IK backs up with SLSQP.
+- **Known weakness:** this is a local method and can stall against a limit (Pink documents the same).
+  Mitigation: warm start from the previous solution, retry from another seed; count "stuck at a limit"
+  as its own failure class in the benchmark.
+- **Options:** clamping after each step; null-space projection (no null space here, so ruled out);
+  weighting / active-set freezing (SNS-style); full QP with a solver dependency; closed-form IK
+  (possible for this arm, kept as an optional cross-check).
+
+## 2026-11-06: approach angle definition and what to do when it is unreachable
+- **Decided:** (1) pitch = angle of the tool approach axis inside the arm's vertical plane (sum of
+  shoulder_lift, elbow, wrist_flex plus a constant offset, to be verified against the URDF); 0 = horizontal
+  pointing forward, negative = pointing down, so straight down is -90 deg. Roll = wrist_roll relative to the
+  arm's vertical plane. (2) When the pose is unreachable, the solver returns a weighted least-squares
+  compromise (position weight >> orientation weight, weights are parameters) together with the position and
+  orientation residuals; callers can apply a strict threshold and treat anything above it as failure.
+- **Why:** Euler angles are singular exactly at straight down, which is the top-down grasp M2/M5 need; the
+  in-plane angle is smooth and linear in the joints. A compromise degrades gracefully near the workspace
+  edge, which matters for a smooth trajectory on the real arm. With no null space the priority is soft
+  (weights), not a hard guarantee.
+- **Options:** Euler angles; rotation-matrix error; fail immediately when unreachable; strict task priority
+  (needs a null space this arm does not have).
